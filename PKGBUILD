@@ -24,7 +24,7 @@ pkgver() {
 build() {
   cd ${srcdir}/${_pkgname}
 
-  git checkout uim-vi-qt5-PKGBUILD
+  git checkout uim-vi-1.9-PKGBUILD
   patch -Np1 < ${srcdir}/destdir.patch
   ./make-wc.sh --prefix=/usr --libexecdir=/usr/lib/uim --with-qt-immodule --with-gtk3-immodule --with-qt4-immodule --with-qt5-immodule --without-sqlite3 --without-anthy --without-skk
   make -j2
