@@ -8,7 +8,7 @@ pkgdesc="A multilingual input method framework"
 arch=('i686' 'x86_64')
 url="http://code.google.com/p/uim/"
 license=('BSD')
-depends=('gtk2' 'gtk3' 'qt4' 'qt5-base' 'libxft' 'libedit'  'm17n-lib')
+depends=('gtk2' 'gtk3' 'qt4' 'qt5-base' 'libxft' 'libedit'  'm17n-lib' 'uim-vi-xtelex')
 makedepends=('patch' 'git' 'intltool' 'perl' 'ruby' 'librsvg' )
 provides=('uim')
 conflicts=('uim' 'uim-svn' 'uim-git')
@@ -19,6 +19,7 @@ md5sums=('SKIP')
 
 pkgver() {
   cd ${srcdir}/${_pkgname}
+  git checkout uim-vi-1.9-PKGBUILD
   git log -1 --format='%cd' --date=short | tr -d -- '-'
 }
 build() {
@@ -34,7 +35,10 @@ package() {
   cd ${srcdir}/${_pkgname}
 
   make -j1 DESTDIR=${pkgdir} install
-
+  rm $pkgdir/usr/share/uim/xtelex.scm
+  rm $pkgdir/usr/share/uim/xtelex-ipa.scm
+  rm $pkgdir/usr/share/uim/xvni.scm
+  rm $pkgdir/usr/share/uim/xvni-ipa.scm
   install -D -m644 COPYING ${pkgdir}/usr/share/licenses/${pkgname}/COPYING
 }
 
