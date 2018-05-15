@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -232,7 +232,7 @@ static char *
 convert_mtext2str(MText *mtext)
 {
   mconv_rebind_buffer(converter, (unsigned char *)buffer_for_converter,
-		      sizeof(buffer_for_converter));
+		      sizeof(buffer_for_converter)-1);
   mconv_encode(converter, mtext);
   buffer_for_converter[converter->nbytes] = 0;
 

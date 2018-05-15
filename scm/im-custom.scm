@@ -1,6 +1,6 @@
 ;;; im-custom.scm: Customization variables for im.scm
 ;;;
-;;; Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -29,7 +29,10 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1 34))
+
 (require "i18n.scm")
+(require "xkb.scm")
 
 (define custom-im-list-as-choice-rec
   (lambda (lst)
@@ -55,6 +58,10 @@
 
 (define-custom-group 'xim
 		     (N_ "XIM")
+		     (N_ "long description will be here."))
+
+(define-custom-group 'xkb
+		     (N_ "Xkb")
 		     (N_ "long description will be here."))
 
 (define-custom-group 'notify
@@ -128,6 +135,11 @@
 ;; subgroup
 (define-custom-group 'xim-preedit
 		     (N_ "Preedit settings of XIM")
+		     (N_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'xkb-preference
+		     (N_ "Settings of X Keyboard Extension")
 		     (N_ "long description will be here."))
 
 ;; subgroup
@@ -637,6 +649,45 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   uim-xim-use-xft-font?))
+
+;;
+;; X Keyboard Extension specific custom
+;;
+
+(define-custom 'xkb-save-map? #f
+  '(xkb xkb-preference)
+  '(boolean)
+  (N_ "Save keyboard map to load in Xkb-less environments")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'xkb-save-map?
+		 'custom-activity-hooks
+		 (lambda ()
+		   (and xkb-plugin-ready? (xkb-lib-display-ready?))))
+
+(custom-add-hook 'xkb-save-map?
+		 'custom-set-hooks
+		 (lambda ()
+		   (if xkb-save-map?
+		       (let ((m (xkb-lib-get-map)))
+			 (if m (guard (err
+				       (else #f))
+				      (get-config-path! #t)
+				      (call-with-output-file xkb-map-path
+					(lambda (p) (write m p)))))))))
+
+(define-custom 'xkb-map-path
+  (string-append (or (get-config-path #t) "") "/xkb-map")
+  '(xkb xkb-preference)
+  '(pathname regular-file)
+  (N_ "Location of keyboard map file")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'xkb-map-path
+		 'custom-activity-hooks
+		 (lambda ()
+		   xkb-plugin-ready?))
+
 ;;
 ;; Notify
 ;;

@@ -1,14 +1,15 @@
 m4_define([UIM_MAJOR_VERSION],      [1])
-m4_define([UIM_MINOR_VERSION],      [9])
-m4_define([UIM_PATCHLEVEL_VERSION], [0])
+m4_define([UIM_MINOR_VERSION],      [8])
+m4_define([UIM_PATCHLEVEL_VERSION], [9])
 m4_define([UIM_VERSION],
     UIM_MAJOR_VERSION.UIM_MINOR_VERSION.UIM_PATCHLEVEL_VERSION)
 
 AC_PREREQ(2.60b)
 AC_INIT([uim], [UIM_VERSION], [uim-en@googlegroups.com])
+AC_CONFIG_MACRO_DIR([m4.generated])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
-AM_INIT_AUTOMAKE([1.10 dist-bzip2])
+AM_INIT_AUTOMAKE([1.10 foreign dist-bzip2])
 
 AC_SUBST(UIM_VERSION_MAJOR, UIM_MAJOR_VERSION)
 AC_SUBST(UIM_VERSION_MINOR, UIM_MINOR_VERSION)
@@ -313,18 +314,18 @@ if test x"$have_x" != xdisabled && test x"$have_x" != xno; then
     CFLAGS="$CFLAGS $XFT_CFLAGS"
     LIBS="$LIBS $XFT_LIBS"
     AC_TRY_LINK([
-#include <X11/Xft/Xft.h>], [ XftFontClose(0, 0); return 1; ], 
+#include <X11/Xft/Xft.h>], [ XftFontClose(0, 0); return 1; ],
       [
         AC_DEFINE(WITH_XFT, 1, [font antialiasing support])
         AC_MSG_CHECKING([Xft UTF-8 support])
         AC_TRY_LINK([
 #include <X11/Xft/Xft.h>
-          ], [ 
-XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; 
+          ], [
+XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
           ],
             AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
             AC_MSG_RESULT(yes),
-            AC_MSG_RESULT(no)) 
+            AC_MSG_RESULT(no))
       ],
       [
         AC_MSG_RESULT([***Could not link with Xft. Install Xft if you want support for it***])
@@ -336,6 +337,8 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
     LIBS=$saved_LIBS
   fi
 fi
+
+AC_XKB
 
 AM_CONDITIONAL(XIM, test x"$use_xim" = xyes)
 AM_CONDITIONAL(WITH_XFT, test x"$XFT" = xtrue)
@@ -628,7 +631,7 @@ fi
 AC_MSG_CHECKING([whether snprintf can declare const char *fmt])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 	   int snprintf(char *a, size_t b, const char *c, ...) { return 0; }
-	   int main(void) { snprintf(0, 0, 0); } 
+	   int main(void) { snprintf(0, 0, 0); }
     ]])],
    [AC_MSG_RESULT(yes)
     AC_DEFINE(SNPRINTF_CONST, [const],
@@ -853,11 +856,27 @@ AC_ARG_ENABLE(gnome3-applet,
   [enable_gnome3_applet=yes])
 
 if test "x$enable_gnome3_applet" != xno; then
-  PKG_CHECK_MODULES(GNOME3_APPLET, libpanelapplet-4.0,
+  PKG_CHECK_MODULES(GNOME3_APPLET, libpanel-applet,
                     enable_gnome3_applet=yes, enable_gnome3_applet=no)
 fi
 
 AM_CONDITIONAL(GNOME3_APPLET, test "x$enable_gnome3_applet" = xyes)
+
+if test "x$enable_gnome3_applet" = xyes; then
+  AC_ARG_WITH([libpanel-applet-dir], [], [LIBPANEL_APPLET_DIR=$withval], [LIBPANEL_APPLET_DIR=""])
+  if test "$LIBPANEL_APPLET_DIR" == ""; then
+    LIBPANEL_APPLET_DIR=`$PKG_CONFIG --variable=libpanel_applet_dir libpanel-applet`
+  fi
+  AC_SUBST(LIBPANEL_APPLET_DIR)
+fi
+
+AC_ARG_ENABLE(debug,
+  AC_HELP_STRING([--enable-debug],
+    [enable debugging]),
+  [],
+  [enable_debug=no])
+
+AM_CONDITIONAL(DEBUG, test "x$enable_debug" = xyes)
 
 dnl ****************************
 dnl *** Check for Qt Library ***
@@ -964,7 +983,7 @@ if test "x$with_qt" = xyes; then
 
   # Process for compiler & linker flags
   QT_CXXFLAGS="-I${QTINCDIR} -DQT_GENUINE_STR -DQT_NO_STL"
-  if test -z "$enable_debug"; then
+  if test "x$enable_debug" = xno; then
     QT_CXXFLAGS="$QT_CXXFLAGS -DQT_NO_DEBUG -DNO_DEBUG"
   fi
   _SAVE_LDFLAGS=$LDFLAGS
@@ -1152,14 +1171,6 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test "x$default_toolkit" = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test "x$default_toolkit" = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test "x$default_toolkit" = xqt4)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT5, test "x$default_toolkit" = xqt5)
-
-AC_ARG_ENABLE(debug,
-  AC_HELP_STRING([--enable-debug],
-    [enable debugging]),
-  [],
-  [enable_debug=no])
-
-AM_CONDITIONAL(DEBUG, test "x$enable_debug" = xyes)
 
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
@@ -1723,6 +1734,37 @@ AC_SUBST(abs_top_builddir)
 ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([sigscheme])
 
+AC_ARG_WITH(libgcroots,
+            AS_HELP_STRING([--with-libgcroots@<:@=WHICH@:>@],
+                           [use alternative libgcroots instead of
+                            package-bundled one.
+                            WHICH=(installed|tiny-subst)
+                            @<:@default=installed@:>@]))
+
+case "${with_libgcroots:=no}" in
+  no)
+    # bundled libgcroots package
+    GCROOTS_LIBS='$(abs_top_builddir)/sigscheme/libgcroots/libgcroots.la'
+    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/libgcroots/include'
+  ;;
+  yes|installed)
+    PKG_CHECK_MODULES(GCROOTS, [gcroots],
+                      [],
+                      [AC_MSG_ERROR([installed libgcroots is not found.])])
+  ;;
+  tiny-subst)
+    # use src/gcroots/gcroots.[hc]
+    GCROOTS_LIBS=
+    GCROOTS_CFLAGS='-I$(abs_top_srcdir)/sigscheme/src/gcroots'
+  ;;
+  *)
+    AC_MSG_ERROR([invalid argument for --with-libgcroots.])
+  ;;
+esac
+
+AC_SUBST(GCROOTS_LIBS)
+AC_SUBST(GCROOTS_CFLAGS)
+
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
                  m4/Makefile
@@ -1827,6 +1869,7 @@ if test "x$with_qt4" = xyes; then
   if test "x$with_qt4_immodule" = xyes; then
     qt4_immodule_option="DEFINES+=QT4_IMMODULE"
   fi
+  set -e
   # Generate Makefiles for Qt4 by qmake
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
     ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
@@ -1849,20 +1892,24 @@ if test "x$with_qt4" = xyes; then
       ${cmake_option} ${ac_abs_top_srcdir}/qt4/toolbar
     cd -
   fi
+  set +e
 fi
 
 if test "x$with_qt4_immodule" = xyes; then
   if test "x$enable_qt4_qt3support" = xyes; then
     qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
   fi
+  set -e
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
     ${qt4_qt3support_option} \
     ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
   ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
     ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+  set +e
 fi
 
 if test "x$use_knotify4" = xyes; then
+  set -e
   # Generate a Makefile for KNotify plugin by cmake
   mkdir -p ${ac_abs_top_builddir}/notify/build
   cd ${ac_abs_top_builddir}/notify/build
@@ -1871,6 +1918,7 @@ if test "x$use_knotify4" = xyes; then
     -DUIMNOTIFY_PLUGINDIR="${LIBDIR}/${PACKAGE}"/notify \
     ${cmake_option} ${ac_abs_top_srcdir}/notify
   cd -
+  set +e
 fi
 
 # Generate Makefiles for Qt5 by qmake
@@ -1878,6 +1926,7 @@ if test "x$with_qt5" = xyes; then
   if test "x$with_qt5_immodule" = xyes; then
     qt5_immodule_option="DEFINES+=QT5_IMMODULE"
   fi
+  set -e
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/candwin/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/candwin/uim-candwin-qt5.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/chardict/Makefile.qmake \
@@ -1889,13 +1938,16 @@ if test "x$with_qt5" = xyes; then
     ${ac_abs_top_builddir}/qt5/switcher/uim-im-switcher-qt5.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/toolbar/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/toolbar/uim-toolbar-qt5.pro
+  set +e
 fi
 
 if test "x$with_qt5_immodule" = xyes; then
+  set -e
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/immodule/Makefile.qmake \
     ${ac_abs_top_builddir}/qt5/immodule/quimplatforminputcontextplugin.pro
   ${QMAKE5} -o ${ac_abs_top_builddir}/qt5/edittest/Makefile.qmake \
     ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+  set +e
 fi
 
 AC_MSG_RESULT([

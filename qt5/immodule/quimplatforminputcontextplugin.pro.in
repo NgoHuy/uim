@@ -1,11 +1,12 @@
 include(../../qt4/common.pro)
 
-PLUGIN_TYPE = platforminputcontexts
-load(qt_plugin)
+TEMPLATE = lib
+CONFIG += plugin
 
 # to include util.h and for quimplatforminputcontext.cpp
 INCLUDEPATH += @srcdir@/../../qt4/candwin \
-               @srcdir@/../../qt4/immodule
+               @srcdir@/../../qt4/immodule \
+               @srcdir@
 
 LIBS += @X11_LIBS@ -luim-counted-init
 
@@ -33,6 +34,7 @@ SOURCES += @srcdir@/quimplatforminputcontext.cpp \
 !win32:!embedded:!mac {
     HEADERS += @srcdir@/../../qt4/immodule/quiminputcontext_compose.h
     SOURCES += @srcdir@/../../qt4/immodule/quiminputcontext_compose.cpp
+    QT += x11extras
 }
 
 OTHER_FILES += uim.json

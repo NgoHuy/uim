@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2012-2013 uim Project http://code.google.com/p/uim/
+  copyright (c) 2012-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -53,7 +53,7 @@
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else
-# include "quimplatforminputcontext.h"
+# include <quimplatforminputcontext.h>
 #endif
 
 CandidateWindowProxy::CandidateWindowProxy()
@@ -297,13 +297,14 @@ void CandidateWindowProxy::initializeProcess()
     if (process->state() != QProcess::NotRunning) {
         return;
     }
-    process->close();
     QString style = candidateWindowStyle();
+    qputenv("__UIM_CANDWIN_CALLED", QByteArray("STARTED"));
 #if QT_VERSION < 0x050000
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt4", QStringList() << style);
 #else
     process->start(UIM_LIBEXECDIR "/uim-candwin-qt5", QStringList() << style);
 #endif
+    qputenv("__UIM_CANDWIN_CALLED", QByteArray("DONE"));
     process->waitForStarted();
 }
 
@@ -556,6 +557,8 @@ void CandidateWindowProxy::preparePageCandidates(int page)
 
 void CandidateWindowProxy::setFocusWidget()
 {
+    if (QApplication::focusWidget() == NULL)
+	return;
     window = QApplication::focusWidget()->window();
     window->installEventFilter(this);
 }

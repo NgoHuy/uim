@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
 All rights reserved.
 
@@ -46,7 +46,7 @@ SUCH DAMAGE.
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else
-# include "quimplatforminputcontext.h"
+# include <quimplatforminputcontext.h>
 #endif
 
 static int im_uim_fd = 0;
@@ -78,7 +78,7 @@ QUimHelperManager::~QUimHelperManager()
         uim_helper_close_client_fd( im_uim_fd );
 }
 
-void QUimHelperManager::checkHelperConnection()
+void QUimHelperManager::checkHelperConnection(uim_context uc)
 {
     if ( im_uim_fd < 0 )
     {
@@ -89,6 +89,7 @@ void QUimHelperManager::checkHelperConnection()
             notifier = new QSocketNotifier( im_uim_fd, QSocketNotifier::Read );
             connect( notifier, SIGNAL( activated( int ) ),
                               this, SLOT( slotStdinActivated() ) );
+            uim_set_uim_fd(uc, im_uim_fd);
         }
     }
 }

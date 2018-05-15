@@ -1,7 +1,7 @@
 /*
 
   Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -37,16 +37,21 @@
 #include <clocale>
 
 #include <QtCore/QStringList>
-#ifdef Q_WS_X11
-# include <QtGui/QX11Info>
-#endif
 #if QT_VERSION < 0x050000
+# ifdef Q_WS_X11
+#  include <QtGui/QX11Info>
+# endif
 # include <QtGui/QInputContext>
 #else
+# if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+#  include <QtX11Extras/QX11Info>
+# endif
+# include <QtCore/qdatastream.h>
 # include <qpa/qplatforminputcontext.h>
 #endif
 
 #include "uim/uim.h"
+#include "uim/uim-scm.h"
 #include "uim/uim-x-util.h"
 #include "uim/counted-init.h"
 
@@ -91,6 +96,9 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
 QPlatformInputContext *UimInputContextPlugin::create( const QString & key, const QStringList & paramList )
 #endif
 {
+    if (qgetenv("__UIM_CANDWIN_CALLED") == QByteArray("STARTED"))
+	return NULL;
+
 #if QT_VERSION >= 0x050000
     Q_UNUSED(paramList);
 #endif
@@ -142,6 +150,10 @@ void UimInputContextPlugin::uimInit()
     if ( !uim_counted_init() ) {
         if (!infoManager)
             infoManager = new QUimInfoManager();
+
+	if (uim_scm_c_bool(uim_scm_callf("require-dynlib", "s", "xkb")))
+	    uim_scm_callf("%xkb-set-display", "p", QX11Info::display());
+
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
         uim_x_kana_input_hack_init( QX11Info::display() );
 #endif

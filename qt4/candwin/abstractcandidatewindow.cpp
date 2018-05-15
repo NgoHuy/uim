@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2010-2013 uim Project http://code.google.com/p/uim/
+  copyright (c) 2010-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -50,7 +50,7 @@ const Qt::WindowFlags candidateFlag = (Qt::Window
                                         | Qt::WindowStaysOnTopHint
                                         | Qt::FramelessWindowHint
                                         | Qt::Tool
-#if defined(Q_WS_X11)
+#if defined(Q_WS_X11) || defined(Q_OS_UNIX)
                                         | Qt::X11BypassWindowManagerHint
 #endif
                                  );

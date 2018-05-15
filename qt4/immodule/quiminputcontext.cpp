@@ -1,7 +1,7 @@
 /*
 
   Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -149,8 +149,7 @@ uim_context QUimInputContext::createUimContext( const char *imname )
                                          0,
                                          QUimInputContext::commit_cb );
 
-    m_HelperManager->checkHelperConnection();
-
+    m_HelperManager->checkHelperConnection(uc);
     /**/
 
     uim_set_preedit_cb( uc, QUimInputContext::clear_cb,
@@ -253,6 +252,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
                 key = qkey;
         }
     }
+    else if ( qkey >= Qt::Key_nobreakspace && qkey <= Qt::Key_ydiaeresis )
+	key = qkey;
     else if ( qkey == Qt::Key_unknown )
     {
         QString text = keyevent->text();
@@ -398,7 +399,7 @@ void QUimInputContext::setFocus()
     if ( candwinIsActive )
         proxy->popup();
 
-    m_HelperManager->checkHelperConnection();
+    m_HelperManager->checkHelperConnection(m_uc);
 
     uim_helper_client_focus_in( m_uc );
     uim_prop_list_update( m_uc );
@@ -419,7 +420,7 @@ void QUimInputContext::unsetFocus()
     proxy->hide();
     m_indicator->hide();
 
-    m_HelperManager->checkHelperConnection();
+    m_HelperManager->checkHelperConnection(m_uc);
 
     uim_helper_client_focus_out( m_uc );
 }

@@ -16,6 +16,8 @@ endif
 
 FORCE:
 
-EXTRA_DIST = quimplatforminputcontextplugin.pro.in
-	     quimplatforminputcontextplugin.h \
-	     quimplatforminputcontextplugin.cpp
+EXTRA_DIST =					\
+	quimplatforminputcontext.cpp		\
+	quimplatforminputcontext.h		\
+	quimplatforminputcontextplugin.pro.in	\
+	uim.json

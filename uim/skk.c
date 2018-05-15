@@ -1,5 +1,5 @@
 /* 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -293,8 +293,8 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
 	  mmap_done = 1;
 	}
       }
+      close(fd);
     }
-    close(fd);
   }
 
   di->addr = mmap_done ? addr : NULL;

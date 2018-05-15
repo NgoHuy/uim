@@ -1,5 +1,5 @@
 ;; 
-;;  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -1295,8 +1295,7 @@
 	    ;;  C-o is also processed here ... orz
 	    (let ((inhibit-read-only t))
 	      (unwind-protect
-		  (progn
-
+		  (let ((have-shift nil))
 		    ;; remove shift if possible
 		    (if (and (uim-check-shift key)
 			     (not (uim-key-binding key)))
@@ -1306,11 +1305,13 @@
 			  ;; lookup function-key-map
 			  (if translated
 			      (setq key translated)
-			    (if (uim-key-binding keytmp)
-				(setq key keytmp)))))
+			    (when (uim-key-binding keytmp)
+                              (setq key keytmp)
+                              (setq have-shift t)))))
 
-		    (if (uim-process-key-vector key uim-prefix-arg)
-			(setq uim-wait-next-key t))
+                    (if (let ((this-command-keys-shift-translated have-shift))
+                          (uim-process-key-vector key uim-prefix-arg))
+                        (setq uim-wait-next-key t))
 		    (setq keyproc-done t))
 		(when (not keyproc-done)
 		  (uim-leave-preedit-mode))
@@ -1482,6 +1483,7 @@
 ;; Toggle uim
 ;;
 
+;;;###autoload
 (defun uim-mode (&optional arg)
   "Toggle uim mode.
 With argument ARG, turn uim mode on if ARG > 0.
@@ -1496,6 +1498,7 @@ uim mode facilitates internationalized input through the uim library."
       (uim-mode-on))))
 
 ;; compat
+;;;###autoload
 (defun uim-mode-switch ()
   (interactive)
   (if uim-mode

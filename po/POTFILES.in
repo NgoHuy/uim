@@ -16,6 +16,7 @@ gtk2/toolbar/applet-gnome.c
 gtk2/toolbar/common-gtk.c
 gtk2/toolbar/standalone-gtk.c
 gtk3/toolbar/applet-gnome3.c
+[type: gettext/glade]gtk3/toolbar/uim-applet-menu.xml
 qt3/chardict/bushuviewwidget.cpp
 qt3/chardict/qt.cpp
 qt3/chardict/unicodeviewwidget.cpp
@@ -93,9 +94,6 @@ scm/sj3.scm
 scm/sj3v2-socket.scm
 scm/skk-custom.scm
 scm/skk-key-custom.scm
-scm/social-ime-custom.scm
-scm/social-ime-key-custom.scm
-scm/social-ime.scm
 scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-custom.scm

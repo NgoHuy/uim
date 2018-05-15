@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
 All rights reserved.
 
@@ -241,6 +241,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
                 key = qkey;
         }
     }
+    else if ( qkey >= Qt::Key_nobreakspace && qkey <= Qt::Key_ydiaeresis )
+	key = qkey;
     else if ( qkey == Qt::Key_unknown )
     {
         QString text = keyevent->text();

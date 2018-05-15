@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2012-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2012-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -76,6 +76,7 @@ public:
     virtual void reset();
     virtual void showInputPanel();
     virtual void update(Qt::InputMethodQueries);
+    virtual void setFocusObject(QObject *object);
 
     uim_context uimContext() { return m_uc; }
 
@@ -99,7 +100,6 @@ public:
 private:
     uim_context createUimContext(const char *imname);
     void createCandidateWindow();
-    void setFocusObject(QObject *object);
     void setFocus();
     void unsetFocus();
 
@@ -134,6 +134,7 @@ private:
 
     QUimTextUtil *m_textUtil;
     bool candwinIsActive;
+    bool m_candwin_assert;
     bool m_isAnimating;
 
     uim_context m_uc;

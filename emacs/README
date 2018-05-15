@@ -1,6 +1,6 @@
 uim.el - Emacs uim bridge
 
-Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 
 All rights reserved.
 
@@ -528,3 +528,11 @@ Q. uim.el cannot be executed on Emacs that checked out from CVS
 
 A. Sorry, currently, we don't support cutting-edge of CVS of Emacs aggressively 
    since it often contains strange bugs.
+
+Q. Standard key such as M-x and C-x C-s do not work
+
+A. uim.el is not compatible with evil. This happens even if the evil
+   mode is not enabled. Check that you do not have the following line
+   in your .emacs.
+
+      (use-package evil)

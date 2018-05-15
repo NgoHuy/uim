@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -60,7 +60,7 @@
 #if QT_VERSION < 0x050000
 #include "quiminputcontext.h"
 #else
-#include "quimplatforminputcontext.h"
+#include <quimplatforminputcontext.h>
 #endif
 
 static const char COMPOSE_FILE[] = "Compose";
@@ -526,7 +526,7 @@ modmask(char *name)
     return(mask);
 }
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11)
 int
 QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 {

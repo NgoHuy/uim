@@ -1,7 +1,7 @@
 /*
 
   Copyright (c) 2004-2005 Kazuki Ohta <mover@hct.zaq.ne.jp>
-  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -38,7 +38,7 @@
 #if QT_VERSION < 0x050000
 # include "quiminputcontext.h"
 #else
-# include "quimplatforminputcontext.h"
+# include <quimplatforminputcontext.h>
 #endif
 
 // This class is for dealing with Dead/Multi key composing.

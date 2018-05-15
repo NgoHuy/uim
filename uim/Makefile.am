@@ -1,6 +1,8 @@
 include libtool-version.mk
-include $(top_builddir)/sigscheme/libgcroots.mk
-include $(top_builddir)/sigscheme/sigscheme.mk
+
+sscmlibdir = ${pkgdatadir}/lib
+SSCM_DEFS = -DSCMLIBDIR="\"$(sscmlibdir)\""
+DEFS += $(SSCM_DEFS)
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -135,7 +137,7 @@ endif
 if EXPAT
 uim_plugin_LTLIBRARIES += libuim-expat.la
 libuim_expat_la_SOURCES = expat.c
-libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la
+libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la libuim-scm.la
 libuim_expat_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_expat_la_CPPFLAGS = -I$(top_srcdir) @EXPAT_CFLAGS@
 endif
@@ -179,6 +181,15 @@ libuim_eb_la_CPPFLAGS = -I$(top_srcdir) \
 libuim_eb_la_CFLAGS = @EBCONF_PTHREAD_CFLAGS@ -Wall
 endif
 
+if XKB
+uim_plugin_LTLIBRARIES += libuim-xkb.la
+libuim_xkb_la_SOURCES = uim-xkb.c
+libuim_xkb_la_LIBADD = libuim-scm.la libuim.la libuim-x-util.la @X11_LIBS@
+libuim_xkb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_xkb_la_CFLAGS = @X11_CFLAGS@
+libuim_xkb_la_CPPFLAGS = -I$(top_srcdir)
+endif
+
 if OSX_DCS
 uim_plugin_LTLIBRARIES += libuim-osx-dcs.la
 libuim_osx_dcs_la_SOURCES = osx-dcs.m
@@ -204,7 +215,7 @@ libuim_bsdlook_la_CPPFLAGS = -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-lolevel.la
 libuim_lolevel_la_SOURCES = lolevel.c
-libuim_lolevel_la_LIBADD = libuim.la
+libuim_lolevel_la_LIBADD = libuim.la libuim-scm.la
 libuim_lolevel_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_lolevel_la_CPPFLAGS = -I$(top_srcdir)
 
@@ -271,7 +282,7 @@ libuim_counted_init_la_SOURCES = counted-init.c counted-init.h
 libuim_counted_init_la_CPPFLAGS = -I$(top_srcdir)
 
 if LIBUIM_X_UTIL
-libuim_x_util_la_SOURCES = uim-x-util.h uim-x-kana-input-hack.c
+libuim_x_util_la_SOURCES = uim-x-util.h uim-x-util.c uim-x-kana-input-hack.c
 libuim_x_util_la_CPPFLAGS = -I$(top_srcdir)
 libuim_x_util_la_CFLAGS = @X11_CFLAGS@
 libuim_x_util_la_LIBADD = @X11_LIBS@

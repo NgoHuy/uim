@@ -1,6 +1,6 @@
 ;;; byeoru-custom.scm: Customization variables for byeoru.scm
 ;;;
-;;; Copyright (c) 2003-2013 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2013 uim Project https://github.com/uim/uim
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -30,6 +30,7 @@
 ;;;;
 
 (require "i18n.scm")
+(require "xkb.scm")
 
 
 (define byeoru-im-name-label (N_ "Byeoru"))
@@ -88,6 +89,10 @@
 
 (define-custom-group 'byeoru-dict
   (N_ "Byeoru dictionaries")
+  (N_ "long description will be here."))
+
+(define-custom-group 'byeoru-xkb
+  (N_ "X Keyboard Extension")
   (N_ "long description will be here."))
 
 (define-custom-group 'byeoru-workarounds
@@ -172,14 +177,14 @@
   (N_ "long description will be here."))
 
 (define-custom 'byeoru-conversion-history-path
-  (string-append (or (home-directory (user-name)) "") "/.byeoru-uim-history")
+  (string-append (or (get-config-path #t) "") "/byeoru/byeoru-history")
   '(byeoru byeoru-dict)
   '(pathname regular-file)
   (N_ "Conversion history file")
   (N_ "long description will be here."))
 
 (define-custom 'byeoru-personal-dict-path
-  (string-append (or (home-directory (user-name)) "") "/.byeoru-uim-dict")
+  (string-append (or (get-config-path #t) "") "/byeoru/byeoru-dict")
   '(byeoru byeoru-dict)
   '(pathname regular-file)
   (N_ "Personal dictionary file")
@@ -191,6 +196,17 @@
   '(pathname regular-file)
   (N_ "System dictionary file")
   (N_ "long description will be here."))
+
+(define-custom 'byeoru-refresh-xkb-map-at-switch-on? #f
+  '(byeoru byeoru-xkb)
+  '(boolean)
+  (N_ "Refresh keyboard map at each switch into Hangul mode")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'byeoru-refresh-xkb-map-at-switch-on?
+		 'custom-activity-hooks
+		 (lambda ()
+		   (and xkb-plugin-ready? (xkb-lib-display-ready?))))
 
 ;; Encoding of the composing character should be changed accordingly.
 (define-custom 'byeoru-compatibility-jamos-for-incomplete-syllables? #t

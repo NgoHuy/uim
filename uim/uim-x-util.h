@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2007-2013 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2007-2013 uim Project https://github.com/uim/uim
 
   All rights reserved.
 
@@ -36,9 +36,13 @@
 
 #include <X11/Xlib.h>
 
+#include "uim.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+int uim_x_keysym2ukey(KeySym xkeysym);
 
 int uim_x_kana_input_hack_translate_key(int ukey, KeyCode hardware_keycode);
 int uim_x_kana_input_hack_filter_event(uim_context uc, XEvent *event);

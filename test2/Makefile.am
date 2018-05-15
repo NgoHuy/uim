@@ -10,7 +10,12 @@ uim_tests = \
 uim_optional_tests =
 uim_xfail_tests = test-fail.scm
 
-TESTS_ENVIRONMENT = $(SH) $(top_builddir)/test2/run-singletest.sh
+TESTS_ENVIRONMENT = \
+	LIBUIM_SYSTEM_SCM_FILES="$(abs_top_srcdir)/sigscheme/lib" \
+	LIBUIM_SCM_FILES="$(abs_top_srcdir)/scm" \
+	LIBUIM_PLUGIN_LIB_DIR="$(abs_top_builddir)/uim/.libs"
+LOG_COMPILER = $(SH)
+LOG_FLAGS = run-singletest.sh
 TESTS = $(uim_tests) $(uim_optional_tests)
 XFAIL_TESTS = $(uim_xfail_tests)
 

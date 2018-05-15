@@ -1,5 +1,5 @@
 ;; 
-;;  Copyright (c) 2005-2013 uim Project http://code.google.com/p/uim/
+;;  Copyright (c) 2005-2013 uim Project https://github.com/uim/uim
 ;;
 ;;  All rights reserved.
 ;;
@@ -158,11 +158,23 @@
 	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
-	((and uim-emacs (>= emacs-major-version 22)) ;;; GNU Emacs-22 or later
+        ;; GNU Emacs-22 and 23
+	((and uim-emacs
+              (= emacs-major-version 22)
+              (= emacs-major-version 23))
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
 	 (define-key uim-mode-map [27] 'uim-process-input)
+	 )
+
+	((and uim-emacs (>= emacs-major-version 24)) ;;; GNU Emacs-24 or later
+	 (define-key uim-mode-map [t] 'uim-process-input)
+	 (define-key uim-preedit-map [t] 'uim-process-input)
+
+	 (define-key uim-mode-map (kbd "ESC") 'uim-process-input)
+
+         (define-key uim-mode-map (kbd "C-c") nil)
 	 )
 
 	)
